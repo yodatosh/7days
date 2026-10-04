@@ -3198,6 +3198,11 @@ function createNote(data, autoFocus = false) {
                         // copy gets fresh ones instead of hijacking the original's.
                         delete dup.alerts;
                         delete dup.timers;
+                        // A saved image holds a media_ key — copy the real image instead
+                        if (dup.imageData) {
+                            const src = noteMediaSrc(o.data);
+                            if (src) dup.imageData = src; else delete dup.imageData;
+                        }
                         dup.x = o.x;
                         dup.y = o.y;
                         dup.zIndex = o.z;
@@ -3253,7 +3258,9 @@ function createNote(data, autoFocus = false) {
                 });
                 save();
             };
-            return { move, stop, setAltDup };
+            // Dropping with Opt still held keeps the clones
+            const keepAltDup = () => { altClones = null; };
+            return { move, stop, setAltDup, keepAltDup };
         };
 
         note.onmousedown = (e) => {
@@ -3276,8 +3283,8 @@ function createNote(data, autoFocus = false) {
                 note.classList.add('selected');
             }
             
-            const { move, stop, setAltDup } = startDrag(e.clientX, e.clientY);
-            const cleanup = (cx, cy) => { setAltDup(false); stop(cx, cy); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey); };
+            const { move, stop, setAltDup, keepAltDup } = startDrag(e.clientX, e.clientY);
+            const cleanup = (cx, cy) => { keepAltDup(); stop(cx, cy); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey); };
             const onMove  = (me) => { if (me.buttons === 0) { cleanup(me.clientX, me.clientY); return; } me.preventDefault(); setAltDup(me.altKey); move(me.clientX, me.clientY); };
             const onUp    = (me) => cleanup(me.clientX, me.clientY);
             // Pressing/releasing Opt alone fires no mousemove — track it directly
