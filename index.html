@@ -69,7 +69,7 @@
   "name": "Year Progress Dashboard",
   "alternateName": "year-progress-dashboard",
   "url": "https://weekdash.com/",
-  "sameAs": "https://yodatoshicom.github.io/7days/",
+  "sameAs": "https://yodatosh.github.io/7days/",
   "description": "A simple weekly planner with sticky notes. Free, and runs in your browser.",
   "applicationCategory": "ProductivityApplication",
   "applicationSubCategory": "Calendar",
@@ -89,7 +89,7 @@
 <script defer src="static/track.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Caveat:wght@400;700&family=DM+Mono:wght@400;500" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=Caveat:wght@400;700&family=DM+Mono:wght@400;500&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
 
 <script>
 // Apply persisted size setting before first paint to prevent flash
@@ -159,28 +159,6 @@ html.has-custom-bg-video { background-image: none !important; }
 
 
 /* Note color bar — shown below note in editing mode */
-.note-color-dot[data-color="default"] { background: rgba(0,0,0,0.08); }
-.note-color-dot[data-color="yellow"] { background: #fbbf24; }
-.note-color-dot[data-color="blue"] { background: #60a5fa; }
-.note-color-dot[data-color="mint"] { background: #34d399; }
-.note-color-dot[data-color="pink"] { background: #f472b6; }
-
-.bar-color-dot {
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    cursor: pointer;
-    border: 2px solid transparent;
-    transition: transform 0.2s var(--spring-easing), border-color 0.15s;
-    flex-shrink: 0;
-}
-.bar-color-dot:hover { transform: scale(1.25); }
-.bar-color-dot.active { border-color: var(--text-color); }
-.bar-color-dot[data-color="default"] { background: rgba(128,128,128,0.25); }
-.bar-color-dot[data-color="yellow"] { background: #fbbf24; }
-.bar-color-dot[data-color="blue"] { background: #60a5fa; }
-.bar-color-dot[data-color="mint"] { background: #34d399; }
-.bar-color-dot[data-color="pink"] { background: #f472b6; }
 
 
 
@@ -235,8 +213,8 @@ body.ready {
     min-height: 40px;
     padding: 12px 16px;
     background: rgba(255, 255, 255, 0.005);
-    backdrop-filter: blur(1px)!important;
-    -webkit-backdrop-filter: blur(2px)!important;
+    backdrop-filter: blur(1px);
+    -webkit-backdrop-filter: blur(1px);
     border: none;
     border-top: 1.2px solid rgba(255, 255, 255, 0.15);
     border-radius: 30px;
@@ -462,7 +440,6 @@ body.ready {
 
 /* ── Page Navigation Dots ── */
 .page-dots {
-    display: none !important;
     position: fixed;
     right: 12px;
     top: 50%;
@@ -507,37 +484,6 @@ body.ready {
     width: 10px;
     height: 10px;
     border-radius: 50%;
-}
-/* Shape toggle button */
-.page-shape-toggle {
-    display: none !important;
-    position: fixed;
-    bottom: 12px;
-    right: 12px;
-    width: 22px;
-    height: 22px;
-    border: none;
-    background: rgba(255, 255, 255, 0.15);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-    border-radius: 6px;
-    cursor: pointer;
-    z-index: 1200;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    padding: 0;
-    transition: background 0.25s ease, opacity 0.25s ease;
-    opacity: 0.4;
-}
-.page-shape-toggle:hover {
-    background: rgba(255, 255, 255, 0.25);
-    opacity: 0.7;
-}
-.page-shape-toggle svg {
-    width: 12px;
-    height: 12px;
-    fill: rgba(255, 255, 255, 0.8);
 }
 
 /* Disable text selection during multi-select mode */
@@ -598,8 +544,7 @@ body.note-editing-mode .note.editing textarea {
     -webkit-backdrop-filter: none !important;
 }
 
-.note.image-note .note-content,
-.note.image-note .note-color-bar {
+.note.image-note .note-content {
     display: none;
 }
 
@@ -718,11 +663,7 @@ video.note-image {
 
 
 
-/* ── Note editing mode — page blur ── */
-.note-edit-overlay {
-    display: none;
-}
-body.note-editing-mode .note-edit-overlay { display: none; }
+/* ── Note editing mode ── */
 body.note-editing-mode .note.editing { z-index: 2000 !important; }
 
 /* ── Expanded note view — blurred page, centered dark "terminal" window ── */
@@ -1080,7 +1021,7 @@ body.note-editing-mode .note.editing { z-index: 2000 !important; }
     flex-shrink: 0;
 }
 .minidock-day-wd {
-    font-size: 9px;
+    font-size: 8px;
     font-weight: 600;
     letter-spacing: 0.04em;
     line-height: 1;
@@ -1093,12 +1034,10 @@ body.note-editing-mode .note.editing { z-index: 2000 !important; }
     line-height: 1;
     font-variant-numeric: tabular-nums;
 }
-/* Today — simple translucent fill with a soft blur, brightest text */
+/* Today — simple translucent fill around the day number (not the weekday label) */
 .minidock-day.is-today {
     color: #ffffff;
-    background: rgba(255, 255, 255, 0.16);
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
+    background: transparent;
 }
 .minidock-day.is-today .minidock-day-wd { opacity: 0.88; }
 .minidock-day.is-today .minidock-day-num { font-weight: 700; }
@@ -1120,6 +1059,13 @@ body.note-editing-mode .note.editing { z-index: 2000 !important; }
     flex-direction: column;
     align-items: center;
     gap: 3px;
+    padding: 4px 6px;
+    border-radius: 9px;
+}
+.minidock-day.is-today .minidock-day-num-wrap {
+    background: rgba(255, 255, 255, 0.16);
+    backdrop-filter: blur(8px);
+    -webkit-backdrop-filter: blur(8px);
 }
 
 /* ── Minidock tooltip ── */
@@ -1214,19 +1160,12 @@ body.note-editing-mode .note.editing { z-index: 2000 !important; }
     font-variant-numeric: tabular-nums;
 }
 .dl-month {
-    display: inline-flex;
     font-family: 'Inter', sans-serif;
     font-size: 10px;
     font-weight: 700;
     letter-spacing: 0.14em;
     text-transform: uppercase;
     line-height: 1;
-}
-.dl-month-char {
-    color: rgba(255, 255, 255, 0.2);
-    transition: color 0.6s var(--sf-easing);
-}
-.dl-month-char.filled {
     color: rgba(255, 255, 255, 0.92);
 }
 .dl-wd {
@@ -1479,22 +1418,6 @@ body.dev-mode .dev-only { display: block; }
     margin: 10px -2px;
 }
 
-.settings-discord-link {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding: 2px 0;
-    color: #b8c0ff;
-    font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-size: 11px;
-    font-weight: 600;
-    letter-spacing: 0.02em;
-    text-decoration: none;
-    opacity: 0.85;
-}
-.settings-discord-link:hover { opacity: 1; text-decoration: none; }
-.settings-discord-link svg { flex-shrink: 0; }
-
 .settings-toggle {
     display: flex;
     gap: 2px;
@@ -1566,106 +1489,6 @@ body.dev-mode .dev-only { display: block; }
 
 
 
-
-/* SEARCH OVERLAY — Minimal, White, Apple-style */
-.search-overlay {
-    position: fixed;
-    inset: 0;
-    z-index: 99999;
-    background: rgba(255, 255, 255, 0.98);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    opacity: 0;
-    visibility: hidden;
-    pointer-events: none;
-    transition: opacity 0.3s var(--sf-easing), visibility 0.3s;
-}
-
-.search-overlay.show {
-    opacity: 1;
-    visibility: visible;
-    pointer-events: auto;
-}
-
-.search-container {
-    width: 100%;
-    max-width: 800px;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 40px;
-    padding: 0 40px;
-    transform: translateY(20px);
-    transition: transform 0.4s var(--spring-easing);
-}
-
-.search-overlay.show .search-container {
-    transform: translateY(0);
-}
-
-.engine-switch {
-    display: flex;
-    gap: 8px;
-    padding: 4px;
-    background: rgba(0, 0, 0, 0.04);
-    border-radius: 12px;
-}
-
-.engine-btn {
-    padding: 6px 14px;
-    border: none;
-    border-radius: 9px;
-    background: transparent;
-    font-size: 11px;
-    font-weight: 600;
-    color: var(--text-color);
-    opacity: 0.4;
-    cursor: pointer;
-    transition: all 0.2s ease;
-}
-
-.engine-btn.active {
-    opacity: 1;
-    background: #fff;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-}
-
-.search-input-wrap {
-    width: 100%;
-    text-align: center;
-}
-
-.search-input {
-    width: 100%;
-    font-family: 'Inter', system-ui, sans-serif;
-    font-size: clamp(32px, 5vw, 64px);
-    font-weight: 700;
-    letter-spacing: -0.03em;
-    color: #1d1d1f;
-    background: transparent;
-    border: none;
-    outline: none;
-    text-align: center;
-    caret-color: #007AFF;
-    padding: 0;
-}
-
-.search-input::placeholder {
-    color: rgba(0, 0, 0, 0.1);
-}
-
-.search-hint {
-    margin-top: 24px;
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.15em;
-    text-transform: uppercase;
-    opacity: 0.2;
-    color: #000;
-}
 
 /* CLAUDE PAYWALL MODAL */
 .claude-paywall {
@@ -1813,8 +1636,6 @@ body.dev-mode .dev-only { display: block; }
 @supports not (backdrop-filter: blur(1px)) {
     .note            { background: rgba(245, 245, 245, 0.96); }
     .settings-panel  { background: rgba(22, 22, 24, 0.95); }
-    .note-arrow-bar  { background: rgba(240, 240, 240, 0.96); }
-    .note-edit-overlay { background: rgba(0,0,0,0.35); }
 }
 
 
@@ -1836,10 +1657,6 @@ body.dev-mode .dev-only { display: block; }
     <p>Please turn on JavaScript to use it.</p>
   </div>
 </noscript>
-
-<div id="desktop-only" style="display:none">Desktop only</div>
-
-<div class="note-edit-overlay" id="note-edit-overlay"></div>
 
 <div class="note-expand-overlay" id="note-expand-overlay">
   <div class="note-expand-window">
@@ -2020,27 +1837,158 @@ body.dev-mode .dev-only { display: block; }
                 } catch (e) {
                     console.error('mediaDB del failed:', e);
                 }
-            },
-            async keys() {
-                try {
-                    const db = await open();
-                    return new Promise((resolve, reject) => {
-                        const tx = db.transaction(STORE, 'readonly');
-                        const req = tx.objectStore(STORE).getAllKeys();
-                        req.onsuccess = () => resolve(req.result);
-                        req.onerror = () => reject(req.error);
-                    });
-                } catch (e) {
-                    console.error('mediaDB keys failed:', e);
-                    return [];
-                }
             }
         };
     })();
 
+    // ---- Multi-tab sync via BroadcastChannel ----
+    const TAB_ID = crypto.randomUUID ? crypto.randomUUID() : String(Date.now());
+    const syncChannel = (typeof BroadcastChannel !== 'undefined')
+        ? new BroadcastChannel('aura_sync')
+        : null;
+
     const LANGS = ['en', 'es', 'pt'];
-    const LANG_LABELS = { en: 'EN', es: 'ES', pt: 'PT' };
     const PAGE_COUNT = 4;
+
+    // ---- i18n: dictionary + helpers. Only pre-made UI strings are translated;
+    // user-written note/alert content is passed through untouched. ----
+    const I18N = {
+        en: {
+            emptyHint: 'Double-click anywhere to create your first note',
+            deleteNoteOne: 'Delete 1 note?',
+            deleteNoteMany: 'Delete {n} notes?',
+            deleteUndone: 'This cannot be undone.',
+            cancel: 'Cancel', delete: 'Delete', blur: 'Blur',
+            decreaseFont: 'Decrease font size', increaseFont: 'Increase font size',
+            close: 'Close', language: 'Language', textSize: 'Text Size',
+            background: 'Background', import: 'Import', reset: 'Reset',
+            chooseImage: 'Choose an image from your computer',
+            restoreDefaultBg: 'Restore the default background',
+            notesState: 'NOTES STATE — paste this to Claude',
+            devClose: 'close', devCopy: 'copy', devExport: 'export notes',
+            currentWeek: 'Current week',
+            reminderTitle: 'Week Dash Reminder', reminderFallback: 'Reminder',
+            timerDone: 'Timer done',
+            restartTimer: 'Restart timer', pauseTimer: 'Pause timer', resumeTimer: 'Resume timer',
+            removeAlert: 'Remove alert', daily: 'daily', now: 'now'
+        },
+        es: {
+            emptyHint: 'Haz doble clic en cualquier lugar para crear tu primera nota',
+            deleteNoteOne: '¿Eliminar 1 nota?',
+            deleteNoteMany: '¿Eliminar {n} notas?',
+            deleteUndone: 'Esto no se puede deshacer.',
+            cancel: 'Cancelar', delete: 'Eliminar', blur: 'Desenfocar',
+            decreaseFont: 'Reducir tamaño de letra', increaseFont: 'Aumentar tamaño de letra',
+            close: 'Cerrar', language: 'Idioma', textSize: 'Tamaño de letra',
+            background: 'Fondo', import: 'Importar', reset: 'Restablecer',
+            chooseImage: 'Elige una imagen de tu ordenador',
+            restoreDefaultBg: 'Restaurar el fondo predeterminado',
+            notesState: 'ESTADO DE NOTAS — pega esto en Claude',
+            devClose: 'cerrar', devCopy: 'copiar', devExport: 'exportar notas',
+            currentWeek: 'Semana actual',
+            reminderTitle: 'Recordatorio de Week Dash', reminderFallback: 'Recordatorio',
+            timerDone: 'Temporizador terminado',
+            restartTimer: 'Reiniciar temporizador', pauseTimer: 'Pausar temporizador', resumeTimer: 'Reanudar temporizador',
+            removeAlert: 'Quitar alerta', daily: 'diario', now: 'ahora'
+        },
+        pt: {
+            emptyHint: 'Clique duas vezes em qualquer lugar para criar a sua primeira nota',
+            deleteNoteOne: 'Eliminar 1 nota?',
+            deleteNoteMany: 'Eliminar {n} notas?',
+            deleteUndone: 'Isto não pode ser desfeito.',
+            cancel: 'Cancelar', delete: 'Eliminar', blur: 'Desfocar',
+            decreaseFont: 'Diminuir tamanho da letra', increaseFont: 'Aumentar tamanho da letra',
+            close: 'Fechar', language: 'Idioma', textSize: 'Tamanho da letra',
+            background: 'Fundo', import: 'Importar', reset: 'Repor',
+            chooseImage: 'Escolha uma imagem do seu computador',
+            restoreDefaultBg: 'Repor o fundo predefinido',
+            notesState: 'ESTADO DAS NOTAS — cole isto no Claude',
+            devClose: 'fechar', devCopy: 'copiar', devExport: 'exportar notas',
+            currentWeek: 'Semana atual',
+            reminderTitle: 'Lembrete do Week Dash', reminderFallback: 'Lembrete',
+            timerDone: 'Temporizador terminado',
+            restartTimer: 'Reiniciar temporizador', pauseTimer: 'Pausar temporizador', resumeTimer: 'Retomar temporizador',
+            removeAlert: 'Remover alerta', daily: 'diário', now: 'agora'
+        },
+        holidays: {
+            'Ano Novo': { en: 'New Year\'s Day', es: 'Año Nuevo' },
+            'Dia de Reis': { en: 'Kings\' Day', es: 'Día de Reyes' },
+            'Dia da Liberdade': { en: 'Freedom Day', es: 'Día de la Libertad' },
+            'Dia do Trabalhador': { en: 'Labour Day', es: 'Día del Trabajador' },
+            'Dia de Portugal': { en: 'Portugal Day', es: 'Día de Portugal' },
+            'Assunção': { en: 'Assumption', es: 'Asunción' },
+            'Implantação Rep.': { en: 'Republic Day', es: 'Implantación de la República' },
+            'Todos os Santos': { en: 'All Saints\' Day', es: 'Todos los Santos' },
+            'Imaculada Conc.': { en: 'Immaculate Conception', es: 'Inmaculada Concepción' },
+            'Noite de Natal': { en: 'Christmas Eve', es: 'Nochebuena' },
+            'Natal': { en: 'Christmas', es: 'Navidad' },
+            'Véspera de Ano Novo': { en: 'New Year\'s Eve', es: 'Nochevieja' },
+            'Páscoa': { en: 'Easter', es: 'Pascua' },
+            'Sexta-feira Santa': { en: 'Good Friday', es: 'Viernes Santo' },
+            'Carnaval': { en: 'Carnival', es: 'Carnaval' },
+            'Corpo de Deus': { en: 'Corpus Christi', es: 'Corpus Christi' }
+        }
+    };
+
+    function T(key) {
+        const dict = I18N[lang] || I18N.en;
+        return dict[key] != null ? dict[key] : (I18N.en[key] != null ? I18N.en[key] : key);
+    }
+
+    function localizeHoliday(label) {
+        const m = I18N.holidays && I18N.holidays[label];
+        return m ? (m[lang] || label) : label;
+    }
+
+    function applyStaticTranslations() {
+        const set = (sel, text) => {
+            if (typeof text !== 'string') return;
+            document.querySelectorAll(sel).forEach(el => {
+                if (el.textContent !== text) el.textContent = text;
+            });
+        };
+        set('.empty-state-label', T('emptyHint'));
+        set('#delete-confirm-sub', T('deleteUndone'));
+        set('#delete-confirm-cancel', T('cancel'));
+        set('#delete-confirm-delete', T('delete'));
+        set('#dev-modal-label', T('notesState'));
+        set('#dev-modal-close', T('devClose'));
+        set('#dev-modal-copy', T('devCopy'));
+        set('#dev-export-btn', T('devExport'));
+        set('.ncm-btn[data-action="blur"]', T('blur'));
+        set('.ncm-delete span', T('delete'));
+
+        const closeBtn = document.getElementById('note-expand-close');
+        if (closeBtn) closeBtn.setAttribute('aria-label', T('close'));
+        const fontMinus = document.querySelector('[data-action="font-minus"]');
+        if (fontMinus) fontMinus.setAttribute('title', T('decreaseFont'));
+        const fontPlus = document.querySelector('[data-action="font-plus"]');
+        if (fontPlus) fontPlus.setAttribute('title', T('increaseFont'));
+
+        const bgImport = document.getElementById('bg-import-btn');
+        const bgReset = document.getElementById('bg-reset-btn');
+        if (bgImport) bgImport.setAttribute('title', T('chooseImage'));
+        if (bgReset) bgReset.setAttribute('title', T('restoreDefaultBg'));
+        for (const [btn, label] of [[bgImport, T('import')], [bgReset, T('reset')]]) {
+            if (!btn) continue;
+            for (const n of btn.childNodes) {
+                if (n.nodeType === 3 && n.textContent.trim()) { n.textContent = label; break; }
+            }
+        }
+
+        const secLabels = document.querySelectorAll('#settings-panel .settings-section-label');
+        const secTexts = [T('language'), T('textSize'), T('background')];
+        secLabels.forEach((el, i) => {
+            const t = secTexts[i];
+            if (t && el.textContent !== t) el.textContent = t;
+        });
+
+        document.querySelectorAll('.note-timer').forEach(span => {
+            span.title = span.classList.contains('done') ? T('restartTimer')
+                       : span.dataset.running === '1' ? T('pauseTimer')
+                       : T('resumeTimer');
+        });
+    }
 
     /* ── Empty board state — soft centered hint ── */
     let emptyState = null;
@@ -2050,7 +1998,7 @@ body.dev-mode .dev-only { display: block; }
         emptyState.className = 'empty-state';
         const lbl = document.createElement('div');
         lbl.className = 'empty-state-label';
-        lbl.innerHTML = 'Double-click anywhere to create your first note';
+        lbl.textContent = T('emptyHint');
         emptyState.appendChild(lbl);
         document.body.appendChild(emptyState);
         return emptyState;
@@ -2202,11 +2150,10 @@ body.dev-mode .dev-only { display: block; }
             let domain = text.replace(/^(https?:\/\/)?(www\.)?/i, '').split('/')[0];
             
             const newNote = {
-                id: 'n' + Date.now(),
+                id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
                 x: mousePos.x - 100,
                 y: mousePos.y - 20,
                 text: text,
-                displayTitle: domain,
                 zIndex: ++topZ,
                 page: currentPage,
                 createdAt: Date.now()
@@ -2277,7 +2224,15 @@ body.dev-mode .dev-only { display: block; }
     function pushDeletedUndo(dataArr) {
         if (!dataArr || !dataArr.length) return;
         deletedNotesStack.push(dataArr.map(d => JSON.parse(JSON.stringify(d))));
-        if (deletedNotesStack.length > MAX_UNDO) deletedNotesStack.shift();
+        if (deletedNotesStack.length > MAX_UNDO) {
+            // Age the oldest batch out: only now is it safe to evict their media
+            // blobs, since undo can no longer restore them.
+            const evicted = deletedNotesStack.shift();
+            evicted.forEach(d => {
+                const key = (typeof d.imageData === 'string' && d.imageData.startsWith('media_')) ? d.imageData : null;
+                if (key) mediaDB.del(key);
+            });
+        }
     }
 
     function restoreLastDeleted() {
@@ -2288,6 +2243,8 @@ body.dev-mode .dev-only { display: block; }
             delete d._deleted;
             d.zIndex = ++topZ;
             notes.push(d);
+            // Re-hydrate any media ref left as a key so the image/video renders
+            hydrateNoteMedia(d);
             createNote(d);
             const el = document.getElementById(d.id);
             if ((d.page || 0) === currentPage) {
@@ -2299,6 +2256,13 @@ body.dev-mode .dev-only { display: block; }
             if (d.alerts && d.alerts.length) d.alerts.forEach(a => scheduleAlert(d, a));
         });
         save();
+    }
+
+    async function hydrateNoteMedia(n) {
+        if (n.imageData && typeof n.imageData === 'string' && n.imageData.startsWith('media_')) {
+            const blob = await mediaDB.get(n.imageData);
+            if (blob) n.imageData = blob;
+        }
     }
 
     window.addEventListener('keydown', (e) => {
@@ -2364,10 +2328,10 @@ body.dev-mode .dev-only { display: block; }
             return;
         }
 
-        // Delete / Backspace — delete selected notes immediately
+        // Delete / Backspace — confirm then delete selected notes
         if ((e.key === 'Delete' || e.key === 'Backspace') && selectedNoteIds.size > 0) {
             e.preventDefault();
-            commitDeleteSelected();
+            showDeleteConfirm();
             return;
         }
 
@@ -2403,7 +2367,9 @@ body.dev-mode .dev-only { display: block; }
 
     function showDeleteConfirm() {
         const count = selectedNoteIds.size;
-        deleteConfirmMsg.textContent = `Delete ${count} ${count === 1 ? 'note' : 'notes'}?`;
+        deleteConfirmMsg.textContent = count === 1
+            ? T('deleteNoteOne')
+            : T('deleteNoteMany').replace('{n}', count);
         deleteConfirmModal.classList.add('open');
         deleteConfirmBtn.focus();
     }
@@ -2417,7 +2383,6 @@ body.dev-mode .dev-only { display: block; }
         selectedNoteIds.forEach(id => {
             const data = notes.find(n => n.id === id);
             if (data) cancelAlertsFor(data);
-            if (data && data.imageData) mediaDB.del('media_' + id);
             const el = document.getElementById(id);
             if (el) el.remove();
         });
@@ -2448,7 +2413,6 @@ body.dev-mode .dev-only { display: block; }
             e.button !== 0 ||
             e.target.closest('.note') ||
             e.target.closest('.settings-btn') ||
-            e.target.closest('.search-overlay') ||
             e.target.closest('.note-context-menu') ||
             e.target.closest('.dev-modal') ||
             e.target.closest('.delete-confirm-modal') ||
@@ -2579,9 +2543,10 @@ body.dev-mode .dev-only { display: block; }
 
     function linkify(text) {
         const urlRegex = /((https?:\/\/|www\.)[^\s]+|[a-zA-Z0-9-]+\.[a-zA-Z]{2,}[^\s]*)/gi;
+        const esc = s => s.replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
         return text.replace(urlRegex, (url) => {
             let href = url.startsWith('http') ? url : 'https://' + url;
-            return `<a href="${href}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${url}</a>`;
+            return `<a href="${esc(href)}" target="_blank" rel="noopener noreferrer" onclick="event.stopPropagation()">${esc(url)}</a>`;
         });
     }
 
@@ -2702,6 +2667,7 @@ body.dev-mode .dev-only { display: block; }
             b.classList.toggle('active', b.dataset.lang === lang);
         });
 
+        applyStaticTranslations();
         if (window.updateMinidockLang) window.updateMinidockLang();
     }
 
@@ -2812,10 +2778,10 @@ body.dev-mode .dev-only { display: block; }
     function deleteNote(note, data) {
         pushDeletedUndo([data]);
         cancelAlertsFor(data);
-        if (data.imageData) mediaDB.del('media_' + data.id);
         data._deleted = true;
         note.remove();
         notes = notes.filter(n => n.id !== data.id);
+        selectedNoteIds.delete(data.id);
         document.body.classList.remove('note-editing-mode');
         activeNoteRef = { note: null, data: null };
         document.querySelectorAll('.note').forEach(n => n.style.opacity = '');
@@ -3038,16 +3004,20 @@ function createNote(data, autoFocus = false) {
             const stop = (cx, cy) => {
                 note.classList.remove('dragging');
                 note.style.transform = '';
+                note.style.opacity = '';
                 note.style.transition = 'transform 0.5s cubic-bezier(0.34, 1.56, 0.64, 1), box-shadow 0.3s ease';
                 setTimeout(() => { note.style.transition = ''; }, 500);
                 
-                // Clamp all selected notes
+                // Clamp all selected notes using each note's own dimensions
                 selectedNoteIds.forEach(id => {
                     const el = document.getElementById(id);
                     if (el) {
-                        const clamped = clampNote(parseFloat(el.style.left), parseFloat(el.style.top));
-                        el.style.left = clamped.x + 'px';
-                        el.style.top = clamped.y + 'px';
+                        el.style.opacity = '';
+                        const margin = 20;
+                        const w = el.offsetWidth, h = el.offsetHeight;
+                        const x = parseFloat(el.style.left), y = parseFloat(el.style.top);
+                        el.style.left = Math.min(Math.max(x, margin), window.innerWidth  - w - margin) + 'px';
+                        el.style.top  = Math.min(Math.max(y, margin), window.innerHeight - h - margin) + 'px';
                     }
                 });
                 save();
@@ -3076,7 +3046,7 @@ function createNote(data, autoFocus = false) {
             }
             
             const { move, stop, setAltDup } = startDrag(e.clientX, e.clientY);
-            const cleanup = (cx, cy) => { stop(cx, cy); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey); };
+            const cleanup = (cx, cy) => { setAltDup(false); stop(cx, cy); window.removeEventListener('mousemove', onMove); window.removeEventListener('mouseup', onUp); window.removeEventListener('keydown', onKey); window.removeEventListener('keyup', onKey); };
             const onMove  = (me) => { if (me.buttons === 0) { cleanup(me.clientX, me.clientY); return; } me.preventDefault(); setAltDup(me.altKey); move(me.clientX, me.clientY); };
             const onUp    = (me) => cleanup(me.clientX, me.clientY);
             // Pressing/releasing Opt alone fires no mousemove — track it directly
@@ -3094,11 +3064,12 @@ function createNote(data, autoFocus = false) {
             if (note.querySelector('.note-edit-ta')) return;
             if (e.target.tagName === 'A') return;
             if (window._lastFileDrop && Date.now() - window._lastFileDrop < 400) return;
-            const t = e.touches[0];
+            const t = e.touches && e.touches[0];
+            if (!t) return;
             const { move, stop } = startDrag(t.clientX, t.clientY);
-            const onMove   = (te) => { te.preventDefault(); const t = te.touches[0]; move(t.clientX, t.clientY); };
+            const onMove   = (te) => { te.preventDefault(); const t = te.touches && te.touches[0]; if (t) move(t.clientX, t.clientY); };
             const cleanup  = () => { window.removeEventListener('touchmove', onMove); window.removeEventListener('touchend', onEnd); window.removeEventListener('touchcancel', onEnd); };
-            const onEnd    = (te) => { const t = te.changedTouches[0]; stop(t.clientX, t.clientY); cleanup(); };
+            const onEnd    = (te) => { const t = te.changedTouches && te.changedTouches[0]; if (t) stop(t.clientX, t.clientY); cleanup(); };
             window.addEventListener('touchmove', onMove, { passive: false });
             window.addEventListener('touchend', onEnd);
             window.addEventListener('touchcancel', onEnd);
@@ -3133,7 +3104,8 @@ function createNote(data, autoFocus = false) {
             };
             const onTouchMove = (te) => {
                 te.preventDefault();
-                const t = te.touches[0];
+                const t = te.touches && te.touches[0];
+                if (!t) return;
                 const newW = Math.max(minW, startW + (t.clientX - startX));
                 const newH = Math.max(minH, startH + (t.clientY - startY));
                 note.style.width = newW + 'px';
@@ -3171,7 +3143,8 @@ function createNote(data, autoFocus = false) {
         rhPath.addEventListener('touchstart', (e) => {
             e.stopPropagation();
             e.preventDefault();
-            const t = e.touches[0];
+            const t = e.touches && e.touches[0];
+            if (!t) return;
             startResize(t.clientX, t.clientY);
         }, { passive: false });
 
@@ -3283,10 +3256,6 @@ function createNote(data, autoFocus = false) {
                     save();
                     return;
                 }
-                if (note.classList.contains('spotify-note')) {
-                    save();
-                    return;
-                }
                 wrapNote(note, data);
                 save();
             };
@@ -3380,7 +3349,7 @@ function createNote(data, autoFocus = false) {
                     if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
                     if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
                     const data = {
-                        id: 'n' + Date.now(),
+                        id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
                         x: Math.round(e.clientX - w / 2),
                         y: Math.round(e.clientY - h / 2),
                         text: '',
@@ -3405,7 +3374,7 @@ function createNote(data, autoFocus = false) {
                     if (w > maxW) { h = Math.round(h * maxW / w); w = maxW; }
                     if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
                     const data = {
-                        id: 'n' + Date.now(),
+                        id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
                         x: Math.round(e.clientX - w / 2),
                         y: Math.round(e.clientY - h / 2),
                         text: '',
@@ -3433,8 +3402,6 @@ function createNote(data, autoFocus = false) {
             !target.closest('.note-context-menu') &&
             !target.closest('.settings-panel') &&
             !target.closest('.settings-btn') &&
-            !target.closest('.note-arrow-bar') &&
-            !target.closest('.search-overlay') &&
             !target.closest('.dev-modal') &&
             !target.closest('.page-dots') &&
             target.tagName !== 'BUTTON' &&
@@ -3442,7 +3409,7 @@ function createNote(data, autoFocus = false) {
             target.tagName !== 'A'
         ) {
             const n = {
-                id: 'n' + Date.now(),
+                id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
                 x: x - 40,
                 y: y - 30,
                 text: '',
@@ -3461,8 +3428,8 @@ function createNote(data, autoFocus = false) {
     let lastTap = 0, lastTapTarget = null;
     window.addEventListener('touchend', (e) => {
         const now = Date.now();
-        const t = e.changedTouches[0];
-        if (now - lastTap < 300 && lastTapTarget === e.target) {
+        const t = e.changedTouches && e.changedTouches[0];
+        if (t && now - lastTap < 300 && lastTapTarget === e.target) {
             spawnNote(t.clientX, t.clientY, e.target);
             lastTap = 0;
         } else {
@@ -3476,9 +3443,6 @@ function createNote(data, autoFocus = false) {
         if (e.key === 'Escape') {
             const active = document.querySelector('.note-edit-ta');
             if (active) active.blur();
-            if (document.body.classList.contains('screenshot-mode')) {
-                document.body.classList.remove('screenshot-mode');
-            }
             return;
         }
 
@@ -3492,22 +3456,21 @@ function createNote(data, autoFocus = false) {
         // Direct typing — create note and start typing
         if (
             e.key.length === 1 &&
+            !e.repeat &&
             !e.ctrlKey &&
             !e.metaKey &&
             !e.altKey &&
             !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) &&
             document.activeElement.contentEditable !== 'true' &&
-            !document.body.classList.contains('screenshot-mode') &&
             !document.getElementById('settings-panel')?.classList.contains('show') &&
             !document.getElementById('dev-modal')?.classList.contains('open') &&
-            !document.getElementById('delete-confirm-modal')?.classList.contains('open') &&
-            !document.getElementById('search-overlay')?.classList.contains('show')
+            !document.getElementById('delete-confirm-modal')?.classList.contains('open')
         ) {
             e.preventDefault();
             const cx = mousePos.x || window.innerWidth / 2;
             const cy = mousePos.y || window.innerHeight / 2;
             const n = {
-                id: 'n' + Date.now(),
+                id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
                 x: cx - 60,
                 y: cy - 30,
                 text: '',
@@ -3631,10 +3594,10 @@ function createNote(data, autoFocus = false) {
     function fireAlert(noteData, alert) {
         const noteText = (noteData.text || '').trim();
         const detail = (alert.text || noteText.split('\n')[0] || '').trim();
-        const body = detail ? detail : (noteText || 'Reminder');
+        const body = detail ? detail : (noteText || T('reminderFallback'));
         if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             try {
-                new Notification('Week Dash Reminder', {
+                new Notification(T('reminderTitle'), {
                     body,
                     icon: 'img/favicon-192.png',
                     badge: 'img/favicon-64.png',
@@ -3678,12 +3641,17 @@ function createNote(data, autoFocus = false) {
     }
 
     function processAlerts(noteData) {
+        // Cancel stale alerts so removed/re-typed slash commands don't duplicate
+        cancelAlertsFor(noteData);
         const { text, alerts } = parseAlertsFromText(noteData.text || '');
-        if (!alerts.length) return;
         noteData.text = text;
-        noteData.alerts = (noteData.alerts || []).concat(alerts);
-        ensureNotifPermission();
-        alerts.forEach(a => scheduleAlert(noteData, a));
+        if (alerts.length) {
+            noteData.alerts = alerts;
+            ensureNotifPermission();
+            alerts.forEach(a => scheduleAlert(noteData, a));
+        } else {
+            delete noteData.alerts;
+        }
     }
 
     function formatTime12(h, m) {
@@ -3694,11 +3662,11 @@ function createNote(data, autoFocus = false) {
 
     function describeAlert(a) {
         if (a.kind === 'daily') {
-            return 'daily ' + formatTime12(a.hour, a.minute || 0)
+            return T('daily') + ' ' + formatTime12(a.hour, a.minute || 0)
                 + (a.text ? ' • ' + a.text.slice(0, 24) : '');
         }
         const ms = a.at - Date.now();
-        if (ms <= 0)        return 'now';
+        if (ms <= 0)        return T('now');
         if (ms < 60000)     return Math.round(ms / 1000) + 's';
         if (ms < 3600000)   return Math.round(ms / 60000) + 'm';
         if (ms < 86400000)  return new Date(a.at).toLocaleTimeString([], { hour:'numeric', minute:'2-digit' });
@@ -3733,7 +3701,7 @@ function createNote(data, autoFocus = false) {
             x.className = 'note-alert-x';
             x.type = 'button';
             x.textContent = '×';
-            x.title = 'Remove alert';
+            x.title = T('removeAlert');
             x.addEventListener('mousedown', e => e.stopPropagation());
             x.addEventListener('click', e => {
                 e.stopPropagation();
@@ -3783,7 +3751,9 @@ function createNote(data, autoFocus = false) {
     function ensureTimerTick() {
         if (timerTick) return;
         timerTick = setInterval(() => {
-            document.querySelectorAll('.note-timer[data-running="1"]').forEach(el => {
+            const running = document.querySelectorAll('.note-timer[data-running="1"]');
+            if (!running.length) { clearInterval(timerTick); timerTick = null; return; }
+            running.forEach(el => {
                 const time = el.querySelector('.note-timer-time');
                 if (time) time.textContent = fmtClock((+el.dataset.end) - Date.now());
             });
@@ -3798,20 +3768,20 @@ function createNote(data, autoFocus = false) {
             time.textContent = '0:00:00';
             delete span.dataset.running;
             span.classList.add('done');
-            span.title = 'Restart timer';
+            span.title = T('restartTimer');
         } else if (t.running) {
             glyph.innerHTML = TIMER_PAUSE;
             span.dataset.running = '1';
             span.dataset.end = t.endAt;
             time.textContent = fmtClock(t.endAt - Date.now());
             span.classList.remove('done');
-            span.title = 'Pause timer';
+            span.title = T('pauseTimer');
         } else {
             glyph.innerHTML = TIMER_PLAY;
             delete span.dataset.running;
             time.textContent = fmtClock(t.remaining || 0);
             span.classList.remove('done');
-            span.title = 'Resume timer';
+            span.title = T('resumeTimer');
         }
     }
 
@@ -3834,10 +3804,10 @@ function createNote(data, autoFocus = false) {
 
     function fireTimer(noteData, t) {
         t.running = false; t.done = true; t.remaining = 0; delete t.endAt;
-        const body = (noteData.text || '').replace(timerTokenRe(), '').replace(/\s+/g, ' ').trim() || 'Timer done';
+        const body = (noteData.text || '').replace(timerTokenRe(), '').replace(/\s+/g, ' ').trim() || T('timerDone');
         if (typeof Notification !== 'undefined' && Notification.permission === 'granted') {
             try {
-                new Notification('Week Dash Reminder', {
+                new Notification(T('reminderTitle'), {
                     body, icon: 'img/favicon-192.png', badge: 'img/favicon-64.png', tag: 'wd-' + t.id
                 });
             } catch (_) {}
@@ -3915,8 +3885,8 @@ function createNote(data, autoFocus = false) {
             if (d) {
                 // Skip hidden notes (other pages) — their rect is 0
                 if (el.style.display === 'none') return;
-                d.x = parseInt(el.style.left);
-                d.y = parseInt(el.style.top);
+                d.x = parseInt(el.style.left, 10);
+                d.y = parseInt(el.style.top, 10);
                 if (d.manualResize) {
                     const rect = el.getBoundingClientRect();
                     d.w = Math.ceil(rect.width);
@@ -3925,32 +3895,75 @@ function createNote(data, autoFocus = false) {
                 d.zIndex = el.style.zIndex;
             }
         });
-        // Store media blobs in IndexedDB, keep only the ref key in memory.
-        // If the blob write fails, keep the data URL in the note so the media
-        // isn't lost — only swap to the ref key once it's actually stored.
+        // Phase 1: store media blobs in IndexedDB, building a snapshot with
+        // key references.  The in-memory notes keep their data URLs until
+        // the full notes array is persisted — if the final write fails the
+        // next save attempt can still retry the blob storage.
+        const blobSwaps = [];
         const toSave = await Promise.all(notes.map(async n => {
             if (n.imageData && typeof n.imageData === 'string' && n.imageData.startsWith('data:')) {
                 const key = 'media_' + n.id;
                 const ok = await mediaDB.put(key, n.imageData);
                 if (ok) {
-                    n.imageData = key;
+                    blobSwaps.push({ note: n, key });
                     return { ...n, imageData: key };
                 }
                 return n;
             }
             return n;
         }));
-        await mediaDB.put('notes', toSave);
+        // Phase 2: persist the notes array — only swap in-memory refs after
+        // this succeeds so a failed write never orphans the data URL.
+        const ok = await mediaDB.put('notes', toSave);
+        if (ok) {
+            blobSwaps.forEach(s => { s.note.imageData = s.key; });
+            if (syncChannel) syncChannel.postMessage({ type: 'saved', tab: TAB_ID });
+        }
     }
 
     /* ============================================================
        MISC
     ============================================================ */
-    function clearNotes() {
-        notes.forEach(n => { if (n.imageData) mediaDB.del('media_' + n.id); });
+
+    // ---- Cross-tab reload: when another tab saves, reload from IDB ----
+    async function reloadFromStorage() {
+        // Wait for any in-flight save to finish so it doesn't overwrite our reload
+        await saveQueue;
+        // Cancel all in-flight alerts and timers
+        notes.forEach(n => cancelAlertsFor(n));
+        // Tear down current DOM
         document.querySelectorAll('.note').forEach(n => n.remove());
-        notes = [];
-        mediaDB.del('notes');
+        clearSelection();
+        activeNoteRef = { note: null, data: null };
+        // Reload from IDB
+        let stored = await mediaDB.get('notes');
+        notes = Array.isArray(stored) ? stored : [];
+        notes.forEach(n => { if (!n.createdAt) n.createdAt = Date.now(); });
+        notes.forEach(n => { if (n.page == null) n.page = 0; });
+        topZ = Math.max(1100, ...notes.map(n => n.zIndex || 0));
+        // Hydrate media blobs, create notes, schedule alerts
+        for (const n of notes.filter(n => !n.archived)) {
+            if (n.imageData && typeof n.imageData === 'string' && n.imageData.startsWith('media_')) {
+                const blob = await mediaDB.get(n.imageData);
+                if (blob) n.imageData = blob;
+            }
+            createNote(n);
+            if (n.alerts && n.alerts.length) n.alerts.forEach(a => scheduleAlert(n, a));
+            if (n.page !== currentPage) {
+                const el = document.getElementById(n.id);
+                if (el) el.style.display = 'none';
+            }
+        }
+        updateEmptyState();
+        renderPageDots();
+    }
+
+    if (syncChannel) {
+        syncChannel.onmessage = (e) => {
+            if (e.data && e.data.type === 'saved' && e.data.tab !== TAB_ID) {
+                reloadFromStorage();
+            }
+        };
     }
 
     // Track which note is being edited for the color bar
@@ -4053,16 +4066,20 @@ function createNote(data, autoFocus = false) {
 
     // Minimal IndexedDB helpers — single store keyed by string
     const IDB_NAME = 'aura', IDB_STORE = 'prefs', IDB_KEY = 'customBg';
+    let _auraDbPromise = null;
     function openIdb() {
-        return new Promise((resolve, reject) => {
-            const req = indexedDB.open(IDB_NAME, 1);
-            req.onupgradeneeded = () => {
-                const db = req.result;
-                if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
-            };
-            req.onsuccess = () => resolve(req.result);
-            req.onerror   = () => reject(req.error);
-        });
+        if (!_auraDbPromise) {
+            _auraDbPromise = new Promise((resolve, reject) => {
+                const req = indexedDB.open(IDB_NAME, 1);
+                req.onupgradeneeded = () => {
+                    const db = req.result;
+                    if (!db.objectStoreNames.contains(IDB_STORE)) db.createObjectStore(IDB_STORE);
+                };
+                req.onsuccess = () => resolve(req.result);
+                req.onerror   = () => { _auraDbPromise = null; reject(req.error); };
+            });
+        }
+        return _auraDbPromise;
     }
     function idbGet(key) {
         return openIdb().then(db => new Promise((resolve, reject) => {
@@ -4137,8 +4154,8 @@ function createNote(data, autoFocus = false) {
             for (let i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
             await idbPut(IDB_KEY, new Blob([bytes], { type: mime }));
             setSetting('has_custom_bg', '1');
+            localStorage.removeItem('aura_custom_bg');
         } catch (_) { /* malformed — drop it */ }
-        localStorage.removeItem('aura_custom_bg');
     }
 
     async function initCustomBg() {
@@ -4287,7 +4304,6 @@ function createNote(data, autoFocus = false) {
         holidays[fmt(easter)]                    = { label: 'Páscoa',         color: '#f5b942' };
         holidays[fmt(addDays(easter, -2))]        = { label: 'Sexta-feira Santa', color: '#fbbf24' };
         holidays[fmt(addDays(easter, -47))]       = { label: 'Carnaval',         color: '#f472b6' };
-        holidays[fmt(addDays(easter, -46))]       = { label: 'Carnaval',         color: '#f472b6' };
         holidays[fmt(addDays(easter, 60))]        = { label: 'Corpo de Deus',   color: '#f5b942' };
 
         return holidays;
@@ -4317,19 +4333,20 @@ function createNote(data, autoFocus = false) {
         const year = date.getFullYear();
         const fixed = PT_EVENTS;
         const fixedKey = `${String(date.getMonth()+1).padStart(2,'0')}-${String(date.getDate()).padStart(2,'0')}`;
-        if (fixed[fixedKey]) return fixed[fixedKey];
+        const localize = ev => ev && ev.label ? { ...ev, label: localizeHoliday(ev.label) } : ev;
+        if (fixed[fixedKey]) return localize(fixed[fixedKey]);
         // Cache per-year holidays
         if (!window._ptHolidays) window._ptHolidays = {};
         if (!window._ptHolidays[year]) window._ptHolidays[year] = getPTHolidays(year);
         const key = `${year}-${fixedKey}`;
-        return window._ptHolidays[year][key] || null;
+        return localize(window._ptHolidays[year][key] || null);
     }
 
     /* ── Minidock — 7-day week (Mon → Sun) + upcoming events, top center ── */
     (function setupMinidock() {
         const dock = document.createElement('div');
         dock.className = 'minidock';
-        dock.setAttribute('aria-label', 'Current week');
+        dock.setAttribute('aria-label', (typeof T === 'function') ? T('currentWeek') : 'Current week');
         document.body.appendChild(dock);
 
         const dayLabel = document.createElement('div');
@@ -4353,35 +4370,13 @@ function createNote(data, autoFocus = false) {
             const now = new Date();
             const today = new Date(now.getFullYear(), now.getMonth(), now.getDate());
             const locale = (typeof lang !== 'undefined' && lang === 'es') ? 'es-ES'
-                         : (typeof lang !== 'undefined' && lang === 'pt') ? 'pt-BR' : 'en-US';
-            const fmtWd = (date) => date.toLocaleDateString(locale, { weekday: 'narrow' }).toUpperCase();
+                     : (typeof lang !== 'undefined' && lang === 'pt') ? 'pt-PT' : 'en-US';
+            const fmtWd = (date) => date.toLocaleDateString(locale, { weekday: 'short' }).replace(/\./g, '').toUpperCase();
 
             dayLabel.innerHTML = '';
-            const wd = document.createElement('span');
-            wd.className = 'dl-wd';
-            wd.textContent = now.toLocaleDateString(locale, { weekday: 'long' });
-            dayLabel.appendChild(wd);
-
-            const num = document.createElement('span');
-            num.className = 'dl-num';
-            num.textContent = now.getDate();
-            dayLabel.appendChild(num);
-
             const monthEl = document.createElement('span');
             monthEl.className = 'dl-month';
-            monthEl.setAttribute('aria-label', now.toLocaleDateString(locale, { month: 'long' }));
-            const monthName = now.toLocaleDateString(locale, { month: 'long' });
-            const mday = now.getDate();
-            const mLen = new Date(now.getFullYear(), now.getMonth() + 1, 0).getDate();
-            const pct = Math.min(1, Math.max(0, mday / mLen));
-            let filled = Math.round(monthName.length * pct);
-            for (let c = 0; c < monthName.length; c++) {
-                const ch = document.createElement('span');
-                ch.className = 'dl-month-char';
-                ch.textContent = monthName[c];
-                if (c < filled) ch.classList.add('filled');
-                monthEl.appendChild(ch);
-            }
+            monthEl.textContent = now.toLocaleDateString(locale, { month: 'long' });
             dayLabel.appendChild(monthEl);
 
             dock.innerHTML = '';
@@ -4468,7 +4463,15 @@ function createNote(data, autoFocus = false) {
             if (dayKey() !== builtKey) build();
         }
 
-        build();
+build();
+
+        // Click minidock to cycle language: en → es → pt → en …
+        const cycleLang = () => {
+            const idx = LANGS.indexOf(typeof lang !== 'undefined' ? lang : 'en');
+            applyLang(LANGS[(idx + 1) % LANGS.length]);
+        };
+        dock.addEventListener('click', cycleLang);
+        dayLabel.addEventListener('click', cycleLang);
 
         function scheduleMidnight() {
             const now = new Date();
