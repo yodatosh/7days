@@ -1870,7 +1870,15 @@ body.dev-mode .dev-only { display: block; }
             reminderTitle: 'Week Dash Reminder', reminderFallback: 'Reminder',
             timerDone: 'Timer done',
             restartTimer: 'Restart timer', pauseTimer: 'Pause timer', resumeTimer: 'Resume timer',
-            removeAlert: 'Remove alert', daily: 'daily', now: 'now'
+            removeAlert: 'Remove alert', daily: 'daily', now: 'now',
+            welcomeNotes: [
+                'Double-click anywhere to create a note ✨',
+                'Drag notes around, and resize them from the corner',
+                'Right-click a note to change its color, blur it or react',
+                'Type “/25m” for a live timer, or “/6pm” for a reminder',
+                'This one is blurred. Hover to peek 👀',
+                'Drop or paste an image to pin it to the board'
+            ]
         },
         es: {
             emptyHint: 'Haz doble clic en cualquier lugar para crear tu primera nota',
@@ -1889,7 +1897,15 @@ body.dev-mode .dev-only { display: block; }
             reminderTitle: 'Recordatorio de Week Dash', reminderFallback: 'Recordatorio',
             timerDone: 'Temporizador terminado',
             restartTimer: 'Reiniciar temporizador', pauseTimer: 'Pausar temporizador', resumeTimer: 'Reanudar temporizador',
-            removeAlert: 'Quitar alerta', daily: 'diario', now: 'ahora'
+            removeAlert: 'Quitar alerta', daily: 'diario', now: 'ahora',
+            welcomeNotes: [
+                'Haz doble clic en cualquier lugar para crear una nota ✨',
+                'Arrastra las notas y cambia su tamaño desde la esquina',
+                'Clic derecho en una nota para cambiar su color, desenfocarla o reaccionar',
+                'Escribe “/25m” para un temporizador, o “/6pm” para un recordatorio',
+                'Esta está desenfocada. Pasa el ratón para verla 👀',
+                'Suelta o pega una imagen para fijarla en el tablero'
+            ]
         },
         pt: {
             emptyHint: 'Clique duas vezes em qualquer lugar para criar a sua primeira nota',
@@ -1908,7 +1924,15 @@ body.dev-mode .dev-only { display: block; }
             reminderTitle: 'Lembrete do Week Dash', reminderFallback: 'Lembrete',
             timerDone: 'Temporizador terminado',
             restartTimer: 'Reiniciar temporizador', pauseTimer: 'Pausar temporizador', resumeTimer: 'Retomar temporizador',
-            removeAlert: 'Remover alerta', daily: 'diário', now: 'agora'
+            removeAlert: 'Remover alerta', daily: 'diário', now: 'agora',
+            welcomeNotes: [
+                'Clique duas vezes em qualquer lugar para criar uma nota ✨',
+                'Arraste as notas e redimensione-as pelo canto',
+                'Clique com o botão direito numa nota para mudar a cor, desfocar ou reagir',
+                'Escreva “/25m” para um temporizador, ou “/6pm” para um lembrete',
+                'Esta está desfocada. Passe o rato por cima para espreitar 👀',
+                'Largue ou cole uma imagem para a fixar no quadro'
+            ]
         },
         holidays: {
             'Ano Novo': { en: 'New Year\'s Day', es: 'Año Nuevo' },
@@ -2049,14 +2073,6 @@ body.dev-mode .dev-only { display: block; }
         notes.forEach(n => { if (!n.createdAt) n.createdAt = Date.now(); });
         notes.forEach(n => { if (n.page == null) n.page = 0; });
 
-        // First time / empty board — show soft centered hint instead of seeded notes
-        if (notes.length === 0) {
-            updateEmptyState();
-        } else {
-            // Legacy localStorage copy no longer needed once IDB has the data
-            try { localStorage.removeItem('aura_notes_v3'); } catch (_) {}
-        }
-
         // Settings — prefer IndexedDB, fall back to the old localStorage cache
         const storedLang = await getSetting('lang');
         lang = LANGS.includes(storedLang) ? storedLang
@@ -2069,6 +2085,25 @@ body.dev-mode .dev-only { display: block; }
         if (sz !== 'S' && sz !== 'M' && sz !== 'L') sz = localStorage.getItem('aura_note_size');
         noteSize = (sz === 'S' || sz === 'M' || sz === 'L') ? sz : 'S';
 
+        // Very first open — scatter a few welcome notes that show off features.
+        // Existing users are marked onboarded too, so clearing the board later
+        // never brings these back.
+        if (!(await getSetting('onboarded'))) {
+            if (notes.length === 0) {
+                notes = makeWelcomeNotes();
+                await mediaDB.put('notes', notes);
+            }
+            await setSetting('onboarded', '1');
+        }
+
+        // Empty board — show soft centered hint
+        if (notes.length === 0) {
+            updateEmptyState();
+        } else {
+            // Legacy localStorage copy no longer needed once IDB has the data
+            try { localStorage.removeItem('aura_notes_v3'); } catch (_) {}
+        }
+
         // One-time font reset migration (was localStorage aura_font_reset_v2)
         if (!(await getSetting('font_reset_v2'))) {
             noteSize = 'S';
@@ -2079,6 +2114,35 @@ body.dev-mode .dev-only { display: block; }
         topZ = Math.max(1100, ...notes.map(n => n.zIndex || 0));
         renderPageDots();
     })();
+
+    function makeWelcomeNotes() {
+        const W = window.innerWidth, H = window.innerHeight;
+        const texts = T('welcomeNotes');
+        const layout = [
+            { x: 0.5,  y: 0.45, color: 'yellow', center: true, reaction: '‼️' },
+            { x: 0.10, y: 0.16, color: 'blue' },
+            { x: 0.66, y: 0.14, color: 'pink' },
+            { x: 0.12, y: 0.66, color: 'mint' },
+            { x: 0.70, y: 0.62, blurred: true },
+            { x: 0.40, y: 0.78 }
+        ];
+        const now = Date.now();
+        return layout.map((l, i) => {
+            const n = {
+                id: 'n' + now + i + Math.random().toString(36).slice(2, 6),
+                x: Math.round(W * l.x - (l.center ? 140 : 0)),
+                y: Math.round(H * l.y - (l.center ? 30 : 0)),
+                text: texts[i],
+                zIndex: 1100 + i,
+                page: 0,
+                createdAt: now
+            };
+            if (l.color) n.color = l.color;
+            if (l.blurred) n.blurred = true;
+            if (l.reaction) n.reaction = l.reaction;
+            return n;
+        });
+    }
 
     function switchPage(page) {
         if (page === currentPage) return;
