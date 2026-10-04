@@ -3,9 +3,9 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-<title>weekDash</title>
-<meta name="description" content="A simple weekly planner with sticky notes. Free, runs in your browser.">
-<meta name="author" content="Year Progress Dashboard">
+<title>Week Dash: Your 7 days, at a glance</title>
+<meta name="description" content="A whiteboard for your week. Sticky notes, timers and reminders, right in your browser. Free, no sign-up.">
+<meta name="author" content="Week Dash">
 <meta name="robots" content="index, follow">
 <meta name="theme-color" content="#ffffff">
 <link rel="canonical" href="https://weekdash.com/">
@@ -13,18 +13,18 @@
 <!-- Open Graph -->
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://weekdash.com/">
-<meta property="og:title" content="Year Progress Dashboard">
-<meta property="og:description" content="A simple weekly planner with sticky notes. Free, runs in your browser.">
+<meta property="og:title" content="Week Dash: Your 7 days, at a glance">
+<meta property="og:description" content="A whiteboard for your week. Sticky notes, timers and reminders, right in your browser. Free, no sign-up.">
 <meta property="og:image" content="https://weekdash.com/img/og.png">
 <meta property="og:image:width" content="1200">
 <meta property="og:image:height" content="630">
-<meta property="og:site_name" content="Year Progress Dashboard">
+<meta property="og:site_name" content="Week Dash">
 <meta property="og:locale" content="en_US">
 
 <!-- Twitter Card -->
 <meta name="twitter:card" content="summary_large_image">
-<meta name="twitter:title" content="Year Progress Dashboard">
-<meta name="twitter:description" content="A simple weekly planner with sticky notes. Free, runs in your browser.">
+<meta name="twitter:title" content="Week Dash: Your 7 days, at a glance">
+<meta name="twitter:description" content="A whiteboard for your week. Sticky notes, timers and reminders, right in your browser. Free, no sign-up.">
 <meta name="twitter:image" content="https://weekdash.com/img/og.png">
 
 <!-- FAQ structured data -->
@@ -38,7 +38,7 @@
       "name": "What is it?",
       "acceptedAnswer": {
         "@type": "Answer",
-        "text": "A simple weekly planner with sticky notes. It runs in your browser."
+        "text": "A whiteboard for your week. Pin sticky notes, timers and reminders to a board that runs in your browser."
       }
     },
     {
@@ -66,11 +66,11 @@
 {
   "@context": "https://schema.org",
   "@type": "WebApplication",
-  "name": "Year Progress Dashboard",
-  "alternateName": "year-progress-dashboard",
+  "name": "Week Dash",
+  "alternateName": "weekdash",
   "url": "https://weekdash.com/",
   "sameAs": "https://yodatosh.github.io/7days/",
-  "description": "A simple weekly planner with sticky notes. Free, and runs in your browser.",
+  "description": "A whiteboard for your week. Sticky notes, timers and reminders, right in your browser. Free, no sign-up.",
   "applicationCategory": "ProductivityApplication",
   "applicationSubCategory": "Calendar",
   "operatingSystem": "Web",
@@ -1652,8 +1652,8 @@ body.dev-mode .dev-only { display: block; }
 </svg>
 <noscript>
   <div style="font-family:sans-serif;max-width:600px;margin:40px auto;padding:0 20px;color:#333">
-    <h1>Year Progress Dashboard</h1>
-    <p>A simple weekly planner with sticky notes. Free, and runs in your browser.</p>
+    <h1>Week Dash</h1>
+    <p>A whiteboard for your week. Sticky notes, timers and reminders, right in your browser. Free, no sign-up.</p>
     <p>Please turn on JavaScript to use it.</p>
   </div>
 </noscript>
@@ -2200,10 +2200,29 @@ body.dev-mode .dev-only { display: block; }
     });
 
     document.addEventListener('paste', (e) => {
-        // Skip if typing in an input/textarea
-        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.contentEditable === 'true') return;
+        // Skip if typing in an input/textarea (the hidden clipboard sink doesn't count)
+        if (isTyping()) return;
 
-        const text = (e.clipboardData || window.clipboardData).getData('text').trim();
+        const cd = e.clipboardData || window.clipboardData;
+        if (!cd) return;
+
+        // Notes copied from Week Dash (this tab, another tab, or another copy of the app)
+        const copied = CLIPBOARD_SYNC && readClipboardNotes(cd);
+        if (copied) {
+            e.preventDefault();
+            pasteNotes(copied);
+            return;
+        }
+
+        // Image/video on the clipboard (e.g. a screenshot) — same as dropping a file
+        const file = Array.from(cd.files || []).find(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
+        if (file) {
+            e.preventDefault();
+            importMediaFile(file, mousePos.x, mousePos.y);
+            return;
+        }
+
+        const text = cd.getData('text').trim();
         if (!text) return;
 
         // Simple URL check
@@ -2271,7 +2290,168 @@ body.dev-mode .dev-only { display: block; }
     }
 
     // ---- COPY / PASTE SELECTED NOTES ----
-    let copiedNotes = null;
+    // Notes travel through the system clipboard so they can be pasted into
+    // another tab, window or copy of the app (e.g. local file -> weekdash.com).
+    // Plain text carries the note text for other apps; text/html carries the
+    // full notes as JSON in a data-weekdash attribute (survives cross-origin
+    // pastes); a custom type is added for browsers that keep it.
+    // Experimental: share copied notes through the system clipboard so they can
+    // be pasted into another window. Off for now — with it off, copy/paste stays
+    // inside this window, straight from memory.
+    const CLIPBOARD_SYNC = false;
+    const CLIP_MIME = 'application/x-weekdash';
+    const CLIP_MAX_MEDIA = 25 * 1024 * 1024; // skip media bigger than this (chars of data URL)
+    let pendingCopy = null;
+    // Last notes copied in this window. Cmd+V pastes these straight from memory
+    // (Safari reliably delivers the keypress, not always the paste event).
+    // Dropped as soon as the window loses focus or anything else is copied, so
+    // a newer clipboard from another app/window always wins.
+    let lastCopy = null;
+    if (CLIPBOARD_SYNC) window.addEventListener('blur', () => { lastCopy = null; });
+
+    function noteMediaSrc(n) {
+        // In memory, imageData may be a media_ key after saving — the rendered
+        // element always holds the real data URL.
+        if (typeof n.imageData === 'string' && n.imageData.startsWith('data:')) return n.imageData;
+        const el = document.getElementById(n.id);
+        const media = el && el.querySelector('.note-image');
+        const src = media && media.src;
+        return (src && src.startsWith('data:')) ? src : null;
+    }
+
+    function buildClipboardPayload() {
+        const selected = notes.filter(n => selectedNoteIds.has(n.id));
+        if (!selected.length) return null;
+        const minX = Math.min(...selected.map(n => n.x));
+        const minY = Math.min(...selected.map(n => n.y));
+        const items = selected.map(n => {
+            const it = { text: n.text || '', ox: n.x - minX, oy: n.y - minY };
+            for (const k of ['color', 'w', 'h', 'manualResize', 'blurred', 'fontSize', 'reaction']) {
+                if (n[k] != null) it[k] = n[k];
+            }
+            if (n.imageData) {
+                const src = noteMediaSrc(n);
+                if (src && src.length <= CLIP_MAX_MEDIA) it.imageData = src;
+            }
+            return it;
+        }).filter(it => it.text || it.imageData);
+        if (!items.length) return null;
+        const json = JSON.stringify({ v: 1, notes: items });
+        const plain = items.map(it => it.text).filter(Boolean).join('\n\n');
+        const esc = t => t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/"/g, '&quot;');
+        const html = '<div data-weekdash="' + esc(json) + '">' +
+            items.map(it => '<p>' + esc(it.text) + '</p>').join('') + '</div>';
+        return { items, json, plain, html };
+    }
+
+    // Safari only enables Edit > Copy / Paste (and so Cmd+C / Cmd+V) when
+    // something editable is focused, and it decides that before the page sees
+    // the key. So while the board is idle, a hidden textarea holds focus with
+    // a selection — real copy/paste events then fire and the handlers above
+    // and below fill or read them. Skipped on touch devices (it would pop the
+    // on-screen keyboard).
+    // A rich-text (contenteditable) sink, not a textarea: WebKit only hands a
+    // plain textarea the text/plain part of a paste from another window.
+    const clipSink = document.createElement('div');
+    clipSink.contentEditable = 'true';
+    clipSink.setAttribute('aria-hidden', 'true');
+    clipSink.tabIndex = -1;
+    clipSink.style.cssText = 'position:fixed;left:-9999px;top:0;width:1px;height:1px;overflow:hidden;opacity:0;pointer-events:none;white-space:pre;';
+    document.body.appendChild(clipSink);
+    const canParkClipSink = CLIPBOARD_SYNC && window.matchMedia('(pointer: fine)').matches;
+    function armClipSink() {
+        if (clipSink.textContent !== ' ') clipSink.textContent = ' ';
+        if (document.activeElement !== clipSink) clipSink.focus({ preventScroll: true });
+        const range = document.createRange();
+        range.selectNodeContents(clipSink);
+        const sel = window.getSelection();
+        sel.removeAllRanges();
+        sel.addRange(range);
+    }
+    function parkClipSink() {
+        if (!canParkClipSink) return;
+        const a = document.activeElement;
+        if (a && a !== document.body && a !== document.documentElement && a !== clipSink) return;
+        armClipSink();
+    }
+    const parkClipSinkSoon = () => setTimeout(parkClipSink, 0);
+    document.addEventListener('mouseup', parkClipSinkSoon);
+    document.addEventListener('keyup', parkClipSinkSoon);
+    document.addEventListener('focusout', parkClipSinkSoon);
+    window.addEventListener('focus', parkClipSinkSoon);
+    parkClipSinkSoon();
+
+    // True when the user is typing in a real field (the clipboard sink doesn't count)
+    function isTyping() {
+        const a = document.activeElement;
+        if (!a || a === clipSink) return false;
+        return ['INPUT', 'TEXTAREA'].includes(a.tagName) || a.isContentEditable;
+    }
+
+    function writeClipboardAsync(payload) {
+        if (!navigator.clipboard || !window.ClipboardItem) return;
+        navigator.clipboard.write([new ClipboardItem({
+            'text/plain': new Blob([payload.plain], { type: 'text/plain' }),
+            'text/html': new Blob([payload.html], { type: 'text/html' })
+        })]).catch(err => console.error('copy failed:', err));
+    }
+
+    document.addEventListener('copy', (e) => {
+        if (!CLIPBOARD_SYNC) return;
+        const payload = pendingCopy;
+        if (!payload) { lastCopy = null; return; }
+        if (!e.clipboardData) return;
+        pendingCopy = null;
+        e.preventDefault();
+        e.clipboardData.setData('text/plain', payload.plain);
+        e.clipboardData.setData('text/html', payload.html);
+        try { e.clipboardData.setData(CLIP_MIME, payload.json); } catch (_) {}
+    });
+
+    function readClipboardNotes(cd) {
+        let json = '';
+        try { json = cd.getData(CLIP_MIME); } catch (_) {}
+        if (!json) {
+            const html = cd.getData('text/html');
+            if (html && html.includes('data-weekdash')) {
+                const el = new DOMParser().parseFromString(html, 'text/html').querySelector('[data-weekdash]');
+                if (el) json = el.getAttribute('data-weekdash');
+            }
+        }
+        if (!json) return null;
+        try {
+            const data = JSON.parse(json);
+            return (data && Array.isArray(data.notes) && data.notes.length) ? data.notes : null;
+        } catch (_) { return null; }
+    }
+
+    function pasteNotes(items) {
+        clearSelection();
+        const baseX = mousePos.x - 20;
+        const baseY = mousePos.y - 20;
+        items.forEach(src => {
+            const n = {
+                id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
+                x: baseX + (src.ox || 0),
+                y: baseY + (src.oy || 0),
+                text: typeof src.text === 'string' ? src.text : '',
+                zIndex: ++topZ,
+                page: currentPage,
+                createdAt: Date.now()
+            };
+            for (const k of ['color', 'w', 'h', 'manualResize', 'blurred', 'fontSize', 'reaction']) {
+                if (src[k] != null) n[k] = src[k];
+            }
+            if (typeof src.imageData === 'string' && src.imageData.startsWith('data:')) n.imageData = src.imageData;
+            notes.push(n);
+            createNote(n);
+            selectedNoteIds.add(n.id);
+            const el = document.getElementById(n.id);
+            if (el) el.classList.add('selected');
+        });
+        updateEmptyState();
+        save();
+    }
 
     let arrowSaveTimer = null;
     function scheduleArrowSave() {
@@ -2329,8 +2509,10 @@ body.dev-mode .dev-only { display: block; }
         }
     }
 
+    if (CLIPBOARD_SYNC) document.addEventListener('cut', () => { lastCopy = null; });
+
     window.addEventListener('keydown', (e) => {
-        if (['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) || document.activeElement.contentEditable === 'true') return;
+        if (isTyping()) return;
 
         // Cmd/Ctrl+Z — undo the last note deletion. Guarded by the text-field
         // check above, so native undo still works while editing a note's text.
@@ -2340,55 +2522,40 @@ body.dev-mode .dev-only { display: block; }
             return;
         }
 
-        // Cmd/Ctrl+C — copy selected notes
-        if ((e.metaKey || e.ctrlKey) && e.key === 'c' && selectedNoteIds.size > 0) {
-            e.preventDefault();
-            const selectedData = notes.filter(n => selectedNoteIds.has(n.id));
-            if (!selectedData.length) return;
-            // Store copies with relative positions (offset from the group's top-left)
-            const minX = Math.min(...selectedData.map(n => n.x));
-            const minY = Math.min(...selectedData.map(n => n.y));
-            copiedNotes = selectedData.map(n => ({
-                text: n.text,
-                color: n.color,
-                imageData: n.imageData,
-                w: n.w,
-                h: n.h,
-                manualResize: n.manualResize,
-                ox: n.x - minX,
-                oy: n.y - minY,
-            }));
+        // Cmd/Ctrl+C — copy selected notes (and, with CLIPBOARD_SYNC, to the system clipboard)
+        if ((e.metaKey || e.ctrlKey) && (e.key === 'c' || e.key === 'C') && selectedNoteIds.size > 0) {
+            const payload = buildClipboardPayload();
+            if (!payload) return;
+            if (!CLIPBOARD_SYNC) {
+                e.preventDefault();
+                lastCopy = payload;
+                return;
+            }
+            // Safari only runs a native copy when something is selected, so give
+            // it a selection in the hidden sink; the copy event carries the notes.
+            pendingCopy = payload;
+            lastCopy = payload;
+            armClipSink();
+            setTimeout(() => {
+                parkClipSink();
+                if (pendingCopy !== payload) return;
+                pendingCopy = null;
+                writeClipboardAsync(payload);
+            }, 0);
             return;
         }
 
-        // Cmd/Ctrl+V — paste copied notes at mouse position
-        if ((e.metaKey || e.ctrlKey) && e.key === 'v' && copiedNotes) {
-            e.preventDefault();
-            clearSelection();
-            const baseX = mousePos.x - 20;
-            const baseY = mousePos.y - 20;
-            copiedNotes.forEach(src => {
-                const n = {
-                    id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
-                    x: baseX + src.ox,
-                    y: baseY + src.oy,
-                    text: src.text,
-                    color: src.color,
-                    w: src.w,
-                    h: src.h,
-                    manualResize: src.manualResize,
-                    imageData: src.imageData,
-                    zIndex: ++topZ,
-                    page: currentPage,
-                    createdAt: Date.now()
-                };
-                notes.push(n);
-                createNote(n);
-                selectedNoteIds.add(n.id);
-                const el = document.getElementById(n.id);
-                if (el) el.classList.add('selected');
-            });
-            save();
+        // Cmd/Ctrl+V — same for paste: Safari only fires it into an editable
+        // element. The paste listener above handles it once it arrives.
+        if ((e.metaKey || e.ctrlKey) && (e.key === 'v' || e.key === 'V')) {
+            if (lastCopy) {
+                e.preventDefault();
+                pasteNotes(lastCopy.items);
+                return;
+            }
+            if (!CLIPBOARD_SYNC) return;
+            armClipSink();
+            setTimeout(parkClipSink, 0);
             return;
         }
 
@@ -3366,6 +3533,11 @@ function createNote(data, autoFocus = false) {
         const file = Array.from(e.dataTransfer.files).find(f => f.type.startsWith('image/') || f.type.startsWith('video/'));
         if (!file) return;
         e.preventDefault();
+        importMediaFile(file, e.clientX, e.clientY);
+    });
+
+    // Turn an image/video file (dropped or pasted) into a media note centered on (clientX, clientY)
+    function importMediaFile(file, clientX, clientY) {
 
         const reader = new FileReader();
 
@@ -3382,8 +3554,8 @@ function createNote(data, autoFocus = false) {
                 <div class="vui-track"><div class="vui-bar" id="vui-bar-active"></div></div>`;
             const indicatorW = 180;
             const indicatorH = 60;
-            uploadIndicator.style.left = Math.min(e.clientX - indicatorW / 2, window.innerWidth - indicatorW - 16) + 'px';
-            uploadIndicator.style.top  = Math.min(e.clientY - indicatorH / 2, window.innerHeight - indicatorH - 16) + 'px';
+            uploadIndicator.style.left = Math.min(clientX - indicatorW / 2, window.innerWidth - indicatorW - 16) + 'px';
+            uploadIndicator.style.top  = Math.min(clientY - indicatorH / 2, window.innerHeight - indicatorH - 16) + 'px';
             document.body.appendChild(uploadIndicator);
 
             reader.onprogress = (pe) => {
@@ -3414,8 +3586,8 @@ function createNote(data, autoFocus = false) {
                     if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
                     const data = {
                         id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
-                        x: Math.round(e.clientX - w / 2),
-                        y: Math.round(e.clientY - h / 2),
+                        x: Math.round(clientX - w / 2),
+                        y: Math.round(clientY - h / 2),
                         text: '',
                         imageData: ev.target.result,
                         w, h,
@@ -3439,8 +3611,8 @@ function createNote(data, autoFocus = false) {
                     if (h > maxH) { w = Math.round(w * maxH / h); h = maxH; }
                     const data = {
                         id: 'n' + Date.now() + Math.random().toString(36).slice(2, 6),
-                        x: Math.round(e.clientX - w / 2),
-                        y: Math.round(e.clientY - h / 2),
+                        x: Math.round(clientX - w / 2),
+                        y: Math.round(clientY - h / 2),
                         text: '',
                         imageData: ev.target.result,
                         w, h,
@@ -3458,7 +3630,7 @@ function createNote(data, autoFocus = false) {
             }
         };
         reader.readAsDataURL(file);
-    });
+    }
 
     function spawnNote(x, y, target) {
         if (
@@ -3524,8 +3696,7 @@ function createNote(data, autoFocus = false) {
             !e.ctrlKey &&
             !e.metaKey &&
             !e.altKey &&
-            !['INPUT', 'TEXTAREA'].includes(document.activeElement.tagName) &&
-            document.activeElement.contentEditable !== 'true' &&
+            !isTyping() &&
             !document.getElementById('settings-panel')?.classList.contains('show') &&
             !document.getElementById('dev-modal')?.classList.contains('open') &&
             !document.getElementById('delete-confirm-modal')?.classList.contains('open')
